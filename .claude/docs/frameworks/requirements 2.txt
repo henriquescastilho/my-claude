@@ -1,0 +1,53 @@
+# Agent SDK Orchestrator Dependencies
+# ===================================
+
+# Core AI SDK
+anthropic>=0.39.0
+
+# Async & Concurrency
+asyncio-atexit>=1.0.1
+
+# CLI & TUI
+rich>=13.7.0
+click>=8.1.7
+prompt-toolkit>=3.0.43
+
+# Configuration
+pyyaml>=6.0.1
+python-dotenv>=1.0.0
+pydantic>=2.5.3
+
+# Logging & Observability
+structlog>=24.1.0
+colorlog>=6.8.2
+
+# Testing
+pytest>=7.4.4
+pytest-asyncio>=0.23.3
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+
+# Type Checking
+mypy>=1.8.0
+types-PyYAML>=6.0.12.12
+
+# Code Quality
+black>=24.1.1
+ruff>=0.1.14
+pylint>=3.0.3
+
+# Performance
+cachetools>=5.3.2
+aiofiles>=23.2.1
+
+# Data & Persistence
+sqlalchemy>=2.0.25
+aiosqlite>=0.19.0
+
+# HTTP (for future web API)
+aiohttp>=3.9.1
+httpx>=0.26.0
+
+# Development
+ipython>=8.20.0
+ipdb>=0.13.13

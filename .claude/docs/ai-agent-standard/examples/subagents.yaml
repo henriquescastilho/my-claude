@@ -1,0 +1,17 @@
+version: 1
+agents:
+  orchestrator:
+    purpose: plan_and_delegate
+    tools: [git, task_tracker, docs]
+  backend-agent:
+    purpose: api_and_data
+    tools: [repo, tests, migrations_readonly]
+  frontend-agent:
+    purpose: ui_and_ux
+    tools: [repo, visual_tests]
+  security-agent:
+    purpose: threat_model_and_secret_scans
+    tools: [repo, secret_scan, policy_checks]
+  review-agent:
+    purpose: cross_review_and_regression
+    tools: [repo, tests, diff_analysis]

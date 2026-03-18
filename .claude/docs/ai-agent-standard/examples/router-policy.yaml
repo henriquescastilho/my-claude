@@ -1,0 +1,17 @@
+version: 1
+routing:
+  - task_type: architecture
+    risk: high
+    model_tier: strong
+  - task_type: security_review
+    risk: high
+    model_tier: strong
+  - task_type: implementation
+    risk: medium
+    model_tier: balanced
+  - task_type: refactor_mechanical
+    risk: low
+    model_tier: economical
+fallback:
+  on_failure: escalate_to_stronger_model
+  max_retries: 2

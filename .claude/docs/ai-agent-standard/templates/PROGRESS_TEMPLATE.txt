@@ -1,0 +1,28 @@
+[project]
+name=
+updated_at=
+owner=
+
+[current_cycle]
+cycle_id=
+task_id=
+agent=
+status=
+
+[done]
+- 
+
+[evidence]
+- tests:
+- logs:
+- artifacts:
+
+[risks]
+- 
+
+[next]
+- 
+
+[rollback]
+- strategy:
+- last_safe_state:
