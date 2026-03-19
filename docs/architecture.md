@@ -13,6 +13,11 @@ The exported `.claude` tree is organized around six main subsystems:
 - `get-shit-done/`: the largest internal orchestration subsystem, with CLI helpers, workflow prompts, templates, and references
 - `plugins/`: only manifest-level metadata is published here
 
+Archived prompt collections are also preserved in:
+
+- `agents-archive/`
+- `agents-backups/`
+
 ### 2. Profiles And Settings
 
 The exported settings model has:
@@ -59,7 +64,22 @@ Most `gsd` commands and several `gsd-*` agents depend on this subtree.
 
 `.claude-mem/settings.template.json` preserves the configuration shape of the older local memory system without publishing any live state or embeddings.
 
-### 6. Generated Inventories
+### 6. Codex Layer
+
+The exported `.codex` tree mirrors the reusable local Codex setup:
+
+- `AGENTS.md`: user instruction baseline
+- `agents/`: Codex specialist prompts
+- `skills/`: local and system skill directories
+- `vendor_imports/skills/`: curated upstream skills tree
+- `vendor_imports/claude/marketplaces/`: vendored Claude plugin marketplace trees
+- `config.template.toml`: sanitized config template
+
+The install script also syncs `.codex/vendor_imports/claude/marketplaces` into `~/.claude/plugins/marketplaces` so the Claude side has plugin source trees available without duplicating them in the repository.
+
+Vendored upstream trees are intentionally preserved close to upstream source. That means they may include example absolute paths, `.env.example` files, placeholder keys, demos, or benchmark artifacts that are not part of the local machine state.
+
+### 7. Generated Inventories
 
 `docs/inventory/` is generated from the exported repo so the published setup stays inspectable without depending on private local state.
 

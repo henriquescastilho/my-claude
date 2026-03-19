@@ -1,0 +1,33 @@
+{
+  "name": "pro-workflow",
+  "version": "2.0.0",
+  "description": "Complete AI coding workflow system. Orchestration patterns, 18 hook events, 5 agents, 7 reference guides, cross-agent support, and searchable learnings.",
+  "author": {
+    "name": "Rohit Ghumare",
+    "url": "https://github.com/rohitg00"
+  },
+  "homepage": "https://github.com/rohitg00/pro-workflow",
+  "repository": "https://github.com/rohitg00/pro-workflow",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "workflow",
+    "productivity",
+    "self-correction",
+    "worktrees",
+    "hooks",
+    "agents",
+    "best-practices",
+    "sqlite",
+    "fts5",
+    "searchable"
+  ],
+  "skills": ["./skills/"],
+  "agents": [
+    "./agents/planner.md",
+    "./agents/reviewer.md",
+    "./agents/scout.md",
+    "./agents/orchestrator.md",
+    "./agents/debugger.md"
+  ]
+}

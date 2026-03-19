@@ -1,0 +1,46 @@
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+
+[profiles.bmad]
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+model = "gpt-5.4"
+
+[features]
+rmcp_client = true
+unified_exec = true
+shell_snapshot = true
+apps = true
+steer = true
+multi_agent = true
+
+# Segurança: por padrão não herdar ambiente e não dar permissões extras.
+[shell_environment_policy]
+inherit = "none"
+
+[projects."$HOME/projects/example-trusted"]
+trust_level = "trusted"
+
+[projects."$HOME/projects/example-untrusted"]
+trust_level = "untrusted"
+
+[projects."$HOME"]
+trust_level = "trusted"
+
+[mcp_servers.notion]
+url = "https://mcp.notion.com/mcp"
+
+[mcp_servers.gcp]
+command = "npx"
+args = ["-y", "@google-cloud/gcloud-mcp"]
+
+[mcp_servers.asaas]
+url = "https://docs.asaas.com/mcp"
+bearer_token_env_var = "ASAAS_MCP_BEARER_TOKEN"
+
+[mcp_servers.mem-hybrid]
+command = "$HOME/.claude-mem-hybrid/run_mem_hybrid.sh"
+
+[notice.model_migrations]
+"gpt-5.3-codex" = "gpt-5.4"

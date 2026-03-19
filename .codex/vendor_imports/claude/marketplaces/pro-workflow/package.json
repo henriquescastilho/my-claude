@@ -1,0 +1,66 @@
+{
+  "name": "pro-workflow",
+  "version": "2.0.0",
+  "description": "Complete AI coding workflow system with orchestration patterns, cross-agent support, reference guides, and searchable learnings",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
+    "db:init": "node dist/db/index.js"
+  },
+  "keywords": [
+    "claude-code",
+    "workflow",
+    "productivity",
+    "self-correction",
+    "worktrees",
+    "hooks",
+    "agents",
+    "agent-teams",
+    "subagents",
+    "best-practices",
+    "sqlite",
+    "fts5",
+    "adaptive-thinking",
+    "context-compaction"
+  ],
+  "author": {
+    "name": "Rohit Ghumare",
+    "url": "https://github.com/rohitg00"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rohitg00/pro-workflow"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^25.2.2",
+    "typescript": "^5.7.3"
+  },
+  "files": [
+    "dist",
+    "scripts",
+    "hooks",
+    "commands",
+    "agents",
+    "contexts",
+    "templates",
+    "rules",
+    "references",
+    "skills",
+    "docs",
+    "config.json",
+    "settings.example.json",
+    "mcp-config.example.json",
+    "README.md"
+  ]
+}
