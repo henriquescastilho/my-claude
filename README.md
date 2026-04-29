@@ -1,92 +1,144 @@
 # my-claude
 
-Public, sanitized export of a large local Claude setup.
+Setup público e sanitizado de um Claude Code completo: agents, skills, hooks, MCP servers, comandos e metodologia de trabalho (handoff, sem emojis, segurança OWASP, deploy workflow, bootstrap de projetos).
 
-This repository does not mirror `~/.claude` blindly. It keeps the reusable parts:
+## Quick start (recomendado): deixa o Claude Code instalar pra você
 
-- `.claude/agents`
-- `.claude/agents-archive`
-- `.claude/agents-backups`
-- `.claude/commands`
-- `.claude/hooks`
-- `.claude/skills`
-- `.claude/get-shit-done`
-- `.claude/docs`
-- `.claude/dashboard`
-- `.claude/tools`
-- `.claude/profiles`
-- `.claude/settings.json`
-- `.claude/plugins/*.json` manifests
-- `.codex/AGENTS.md`
-- `.codex/agents`
-- `.codex/skills`
-- `.codex/vendor_imports/skills`
-- `.codex/vendor_imports/claude/marketplaces`
-- `.codex/config.template.toml`
-- `.claude-mem-hybrid` runtime code and compose files
-- `.claude-mem/settings.template.json`
-
-It intentionally excludes private or high-churn state:
-
-- auth, sessions, telemetry, debug, file history, shell snapshots
-- task/todo runtime stores
-- agent memory and per-project memory
-- plugin caches
-- database files, Redis/Postgres data, logs
-
-## Structure
-
-- `.claude/`: main Claude configuration, prompts, hooks, workflows, and manifests
-- `.codex/`: Codex prompts, skills, curated vendor imports, and config template
-- `.claude-mem-hybrid/`: MCP memory server backed by PostgreSQL + Redis
-- `.claude-mem/`: template settings for the older local memory stack
-- `docs/`: architecture notes and generated inventories
-- `scripts/`: install and inventory tooling
-
-## Install
-
-1. Clone this repo.
-2. Review `.claude/settings.json`, `.claude/profiles/*.json`, `.claude/settings.local.template.json`, and `.codex/config.template.toml`.
-3. Run:
+1. Clone o repo:
 
 ```bash
+git clone https://github.com/henriquescastilho/my-claude.git ~/my-claude
+cd ~/my-claude
+```
+
+2. Abre o Claude Code dentro dessa pasta:
+
+```bash
+claude
+```
+
+3. Cola o prompt abaixo. O Claude faz o resto.
+
+### Prompt de setup
+
+````
+Você está dentro do repo `my-claude`. Faça o setup completo no meu sistema seguindo estes passos, em ordem, parando se algum passo falhar:
+
+1. Backup
+   - Se `~/.claude/settings.json` existir, copia para `~/.claude/settings.json.bak-$(date +%Y%m%d-%H%M%S)`.
+   - Se `~/.claude.json` existir, copia para `~/.claude.json.bak-$(date +%Y%m%d-%H%M%S)`.
+
+2. Rodar o instalador
+   - Executa `./scripts/install.sh`. Isso faz rsync de `.claude/`, `.codex/`, `.claude-mem-hybrid/` para o `$HOME` com exclusões de cache/state.
+
+3. MCPs
+   - Lê `.claude/mcp-servers.template.json`.
+   - Para cada server, pergunta se quero ativar. Se sim, adiciona em `~/.claude.json` no campo `mcpServers`.
+   - Para cada `${VAR}` placeholder em env, pergunta o valor (sem ecoar) ou deixa vazio se eu não tiver a chave ainda.
+
+4. Plugins
+   - Abre `.claude/settings.json` e lê `enabledPlugins`.
+   - Lista os plugins (context7, commit-commands, claude-md-management, pyright-lsp, typescript-lsp, skill-creator, playwright) e me diz para rodar `/plugin` dentro do Claude pra instalar cada um. Esse passo precisa ser interativo dentro do Claude, não pode ser via shell.
+
+5. Personalização
+   - Abre `~/.claude/CLAUDE.md`.
+   - Substitui "Henrique Castilho" pelo meu nome (pergunta).
+   - Substitui "DME Technology" pelo nome da minha empresa/operação (pergunta, opcional).
+   - Mantém o resto da metodologia intacta (regras de ouro, roteamento de modelo, sem emojis, português correto, OWASP, handoff).
+
+6. Métodos
+   - Confirma que `~/.claude/methods/` existe com os refs: handoff, no-emoji, security, deploy, bootstrap, banner.
+   - Mostra um resumo de 1 linha de cada.
+
+7. Sub-agents
+   - Lista os 7 sub-agents instalados em `~/.claude/agents/`: architect, implementer, scout, reviewer, tester, security-auditor, deployer. Mostra o modelo de cada um.
+
+8. Memória híbrida (opcional)
+   - Pergunta se quero rodar o servidor de memória com PostgreSQL + Redis.
+   - Se sim, executa `cd ~/.claude-mem-hybrid && docker compose up -d` e mostra o status.
+
+9. RTK (opcional)
+   - Pergunta se quero instalar o Rust Token Killer (proxy CLI que reduz tokens em 60-90% em operações de dev). Se sim, mostra o link de instalação.
+
+10. Validação final
+    - Roda `ls ~/.claude/agents ~/.claude/skills ~/.claude/commands ~/.claude/hooks ~/.claude/methods` e confirma que tudo foi copiado.
+    - Mostra um resumo do que foi instalado e o que ficou pendente.
+
+Importante:
+- Não comite nada.
+- Não exponha chaves de API no terminal.
+- Se algum passo falhar, mostra o erro e pergunta se continua.
+- Use português correto com acentos. Sem emojis.
+````
+
+## O que tem aqui
+
+### `.claude/`
+- **`agents/`** — 7 sub-agents com roteamento por modelo (Opus/Sonnet/Haiku)
+- **`skills/`** — skills custom (graphify, deslop, deploy-check, ui-ux-pro-max, mcp-builder, etc.)
+- **`commands/`** — slash commands organizados (gsd, taskmaster, memory, security, workflow, cct, utility-cmds)
+- **`hooks/`** — secret-scanner, dangerous-command-blocker, conventional-commits, env-blocker, gsd-statusline, etc.
+- **`methods/`** — refs de metodologia (handoff, no-emoji, security OWASP, deploy, bootstrap, banner)
+- **`CLAUDE.md`** + **`RTK.md`** + **`SECOND_BRAIN.md`** — método completo
+- **`mcp-servers.template.json`** — MCPs sanitizados (n8n-mcp, claude-skills-mcp, mem-hybrid, magic)
+- **`settings.json`** — config de hooks e plugins
+
+### `.codex/`
+- Setup do Codex CLI com prompts, skills e vendor imports
+
+### `.claude-mem-hybrid/`
+- Servidor MCP de memória persistente (PostgreSQL + Redis via docker compose)
+
+## Filosofia (resumo do `CLAUDE.md`)
+
+1. **Acertar de primeira** — ler todo o contexto antes de codar
+2. **Nunca chutar** — se não sabe a stack, lê
+3. **Validar antes de declarar pronto** — lint, type, build, testes
+4. **Corrigir tudo de uma vez** — não em pingo a pingo
+5. **Zero cara de IA** — UI production-grade, sem placeholder, sem "Powered by AI"
+6. **Segurança é pré-requisito** — OWASP Top 10 em toda entrega
+7. **Sem emojis** — em lugar nenhum (texto, commits, PR, UI, logs)
+8. **Português correto** — acentos e cedilha sempre
+
+## Install manual (alternativa ao prompt)
+
+```bash
+git clone https://github.com/henriquescastilho/my-claude.git
+cd my-claude
 ./scripts/install.sh
 ```
 
-4. If you use the hybrid memory server, start it with:
+Depois:
 
-```bash
-cd ~/.claude-mem-hybrid
-docker compose up -d
+1. Copia `.claude/mcp-servers.template.json` → adiciona em `~/.claude.json` no campo `mcpServers`, preenche `${VARS}`.
+2. No Claude Code, roda `/plugin` e instala cada plugin listado em `enabledPlugins` do `settings.json`.
+3. Edita `~/.claude/CLAUDE.md` trocando o nome/empresa.
+4. (Opcional) `cd ~/.claude-mem-hybrid && docker compose up -d` para o servidor de memória.
+
+## Sanitização
+
+- Paths absolutos `/Users/.../` → `$HOME` ou `~`
+- API keys em MCPs → placeholders `${VAR}`
+- Excluídos: memória pessoal, sessions, todos, telemetry, cache, secrets state, plugin caches (1.3GB)
+- `.gitignore` cobre auth, history, sqlite, logs, sessions, db state
+
+## Estrutura de pastas
+
 ```
-
-5. Rebuild inventories after local changes:
-
-```bash
-python3 scripts/build_inventory.py
+my-claude/
+├── .claude/              # config principal
+│   ├── agents/           # sub-agents
+│   ├── skills/           # skills custom
+│   ├── commands/         # slash commands
+│   ├── hooks/            # hooks PreToolUse/PostToolUse/SessionStart
+│   ├── methods/          # metodologia (handoff, security, deploy, bootstrap)
+│   ├── CLAUDE.md         # regras globais
+│   ├── settings.json     # config de hooks e plugins
+│   └── mcp-servers.template.json
+├── .codex/               # setup Codex CLI
+├── .claude-mem-hybrid/   # MCP memory server
+├── docs/                 # notas de arquitetura
+└── scripts/
+    ├── install.sh        # instalador principal
+    └── build_inventory.py
 ```
-
-## Plugins
-
-The repo now publishes:
-
-- Claude plugin manifests in `.claude/plugins/*.json`
-- full vendored marketplace source trees in `.codex/vendor_imports/claude/marketplaces`
-- curated Codex skills vendor tree in `.codex/vendor_imports/skills`
-
-It still does not publish plugin caches or machine state.
-
-This preserves:
-
-- installed plugin names
-- pinned marketplace names
-- pinned plugin versions and commit SHAs
-- enabled plugin matrices in global settings and profiles
-
-## Notes
-
-- First-party path references were rewritten to use `$HOME` or `~`.
-- Vendored upstream trees are mirrored mostly as-is and may still contain upstream example paths, `.env.example` files, placeholder API keys, or benchmark artifacts. Those are reference content, not local machine state.
-- `settings.local.template.json` is a template. Keep machine-specific permissions local.
-- The legacy `.claude-mem` data stores are intentionally excluded; only configuration shape is kept.
-- `.codex/config.template.toml` is sanitized. Local trust decisions and project names were replaced by examples.
