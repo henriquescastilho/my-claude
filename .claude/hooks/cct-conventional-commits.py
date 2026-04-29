@@ -18,27 +18,29 @@ if tool_name != "Bash" or "git commit" not in command:
     sys.exit(0)
 
 # Extract commit message from -m flag
-# Handle both -m "message" and -m 'message' formats
-match = re.search(r'git commit.*?-m\s+["\']([^"\']+)["\']', command)
-if not match:
-    # Also try heredoc format: -m "$(cat <<'EOF' ... EOF)"
-    heredoc_match = re.search(r'git commit.*?-m\s+"?\$\(cat\s+<<["\']?EOF["\']?\s*\n(.+?)\nEOF', command, re.DOTALL)
-    if heredoc_match:
-        commit_msg = heredoc_match.group(1).strip()
+# Try heredoc format first: -m "$(cat <<'EOF' ... EOF)"
+heredoc_match = re.search(r'-m\s+"?\$\(cat\s+<<[\s]*["\']?EOF["\']?\s*\n(.+?)\n\s*EOF', command, re.DOTALL)
+if heredoc_match:
+    commit_msg = heredoc_match.group(1).strip()
+else:
+    # Handle both -m "message" and -m 'message' formats
+    match = re.search(r'git commit.*?-m\s+["\']([^"\']+)["\']', command)
+    if match:
+        commit_msg = match.group(1)
     else:
         sys.exit(0)  # Can't extract message, allow it
-else:
-    commit_msg = match.group(1)
 
 # Check if message follows Conventional Commits format
 # Format: type(scope)?: description
 # Types: feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert
 conventional_pattern = r'^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\(.+\))?:\s.+'
 
-if not re.match(conventional_pattern, commit_msg):
+# Validate only the first line (subject) of the commit message
+first_line = commit_msg.split('\n')[0].strip()
+if not re.match(conventional_pattern, first_line):
     reason = f"""❌ Invalid commit message format
 
-Your message: {commit_msg}
+Your message: {first_line}
 
 Commit messages must follow Conventional Commits:
   type(scope): description

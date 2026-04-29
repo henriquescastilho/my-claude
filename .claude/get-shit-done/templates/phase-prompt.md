@@ -38,10 +38,10 @@ Output: [What artifacts will be created]
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/execute-plan.md
-@~/.claude/get-shit-done/templates/summary.md
+@$HOME/.claude/get-shit-done/workflows/execute-plan.md
+@$HOME/.claude/get-shit-done/templates/summary.md
 [If plan contains checkpoint tasks (type="checkpoint:*"), add:]
-@~/.claude/get-shit-done/references/checkpoints.md
+@$HOME/.claude/get-shit-done/references/checkpoints.md
 </execution_context>
 
 <context>
@@ -85,7 +85,7 @@ Output: [What artifacts will be created]
   <done>[Acceptance criteria]</done>
 </task>
 
-<!-- For checkpoint task examples and patterns, see @~/.claude/get-shit-done/references/checkpoints.md -->
+<!-- For checkpoint task examples and patterns, see @$HOME/.claude/get-shit-done/references/checkpoints.md -->
 
 <task type="checkpoint:decision" gate="blocking">
   <decision>[What needs deciding]</decision>
@@ -341,7 +341,7 @@ Output: User model, API endpoints, and UI components.
   <name>Task 2: Create User API endpoints</name>
   <files>src/features/user/api.ts</files>
   <action>GET /users (list), GET /users/:id (single), POST /users (create). Use User type from model.</action>
-  <verify>curl tests pass for all endpoints</verify>
+  <verify>fetch tests pass for all endpoints</verify>
   <done>All CRUD operations work</done>
 </task>
 </tasks>
@@ -382,9 +382,9 @@ Output: Working dashboard component.
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/execute-plan.md
-@~/.claude/get-shit-done/templates/summary.md
-@~/.claude/get-shit-done/references/checkpoints.md
+@$HOME/.claude/get-shit-done/workflows/execute-plan.md
+@$HOME/.claude/get-shit-done/templates/summary.md
+@$HOME/.claude/get-shit-done/references/checkpoints.md
 </execution_context>
 
 <context>
@@ -407,7 +407,7 @@ Output: Working dashboard component.
 <task type="auto">
   <name>Start dev server</name>
   <action>Run `npm run dev` in background, wait for ready</action>
-  <verify>curl localhost:3000 returns 200</verify>
+  <verify>fetch http://localhost:3000 returns 200</verify>
 </task>
 
 <task type="checkpoint:human-verify" gate="blocking">

@@ -5,7 +5,7 @@ UI-SPEC.md locks spacing, typography, color, copywriting, and design system deci
 </purpose>
 
 <required_reading>
-@~/.claude/get-shit-done/references/ui-brand.md
+@$HOME/.claude/get-shit-done/references/ui-brand.md
 </required_reading>
 
 <process>

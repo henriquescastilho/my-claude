@@ -3,7 +3,7 @@ Audit Nyquist validation gaps for a completed phase. Generate missing tests. Upd
 </purpose>
 
 <required_reading>
-@~/.claude/get-shit-done/references/ui-brand.md
+@$HOME/.claude/get-shit-done/references/ui-brand.md
 </required_reading>
 
 <process>

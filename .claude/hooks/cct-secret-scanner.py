@@ -137,12 +137,25 @@ EXCLUDED_FILES = [
     '.env.sample',
     '.env.template',
     'package-lock.json',
+    'pnpm-lock.yaml',
     'yarn.lock',
     'poetry.lock',
     'Pipfile.lock',
     'Cargo.lock',
     'go.sum',
+    'bun.lockb',
     '.gitignore',
+    # Firebase config files: the API keys embedded here are Firebase
+    # *Web API keys*, which are public by design — security is enforced by
+    # Firestore rules and App Check, not by hiding the key. Officially
+    # documented at https://firebase.google.com/docs/projects/api-keys
+    'google-services.json',
+    'GoogleService-Info.plist',
+    'GoogleService-Info-Dev.plist',
+    'GoogleService-Info-Prod.plist',
+    # Vite dev env with public Firebase config (VITE_FIREBASE_*).
+    # Any real server-side secret should live in .env (ignored) instead.
+    '.env.development',
 ]
 
 # Directories to exclude
