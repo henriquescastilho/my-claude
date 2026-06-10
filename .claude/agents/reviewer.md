@@ -3,7 +3,7 @@ name: reviewer
 description: Code review specialist. Use proactively after writing code, before PRs, or when asked to review. Focuses on bugs, logic errors, security issues, and code quality.
 tools: Read, Grep, Glob, Bash
 disallowedTools: Write, Edit
-model: sonnet
+model: opus
 color: yellow
 memory: project
 effort: high

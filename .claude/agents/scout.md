@@ -3,7 +3,7 @@ name: scout
 description: Fast read-only codebase explorer. Use proactively for ANY file search, code lookup, grep, or codebase exploration before implementation. Saves context by keeping verbose search results out of the main conversation.
 tools: Read, Grep, Glob, Bash
 disallowedTools: Write, Edit
-model: haiku
+model: sonnet
 color: cyan
 memory: user
 effort: medium

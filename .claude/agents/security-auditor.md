@@ -3,7 +3,7 @@ name: security-auditor
 description: Cybersecurity specialist and pentester. Use proactively after implementing features, before deploy, for security reviews, vulnerability scanning, and penetration testing mindset analysis. Thinks like an attacker.
 tools: Read, Grep, Glob, Bash
 disallowedTools: Write, Edit
-model: sonnet
+model: opus
 color: red
 memory: user
 effort: high

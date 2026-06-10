@@ -67,7 +67,9 @@ SECRET_PATTERNS = [
     (r'(?i)azure[_\-\s]*(?:key|secret|token)[\'"\s]*[=:][\'"\s]*[A-Za-z0-9+/=]{32,}', 'Azure Key', 'high'),
 
     # Cloudflare API Tokens
-    (r'(?:cf|cloudflare)[_\-]?[A-Za-z0-9_\-]{37,}', 'Cloudflare API Token', 'medium'),
+    # Word boundary at start prevents false positives inside hex strings
+    # like SHA256 digests (e.g. sha256:...cf5428c4...).
+    (r'\b(?:cf|cloudflare)[_\-]?[A-Za-z0-9_\-]{37,}', 'Cloudflare API Token', 'medium'),
 
     # DigitalOcean Tokens
     (r'dop_v1_[0-9a-f]{64}', 'DigitalOcean Personal Access Token', 'high'),
@@ -144,6 +146,7 @@ EXCLUDED_FILES = [
     'Cargo.lock',
     'go.sum',
     'bun.lockb',
+    'uv.lock',
     '.gitignore',
     # Firebase config files: the API keys embedded here are Firebase
     # *Web API keys*, which are public by design — security is enforced by
@@ -156,6 +159,9 @@ EXCLUDED_FILES = [
     # Vite dev env with public Firebase config (VITE_FIREBASE_*).
     # Any real server-side secret should live in .env (ignored) instead.
     '.env.development',
+    # Paperclip agent configuration — UUIDs here are agent/project IDs,
+    # not credentials. Real secrets (API keys) come from env vars at runtime.
+    'paperclip-config.json',
 ]
 
 # Directories to exclude
@@ -163,6 +169,9 @@ EXCLUDED_DIRS = [
     'node_modules/',
     'vendor/',
     '.git/',
+    # Drizzle ORM migration metadata: bare UUIDs are snapshot IDs, not secrets.
+    'migrations/meta/',
+    'drizzle/meta/',
     'dist/',
     'build/',
     '__pycache__/',
@@ -232,6 +241,9 @@ def scan_file(file_path):
                     if 'example' in line_lower or 'placeholder' in line_lower or 'fixture' in line_lower:
                         continue
                     if line_stripped.startswith('#') or line_stripped.startswith('//'):
+                        continue
+                    # Skip nil UUID — universally understood sentinel value, never a secret
+                    if match.group(0) == '00000000-0000-0000-0000-000000000000':
                         continue
 
                     findings.append({
@@ -328,9 +340,11 @@ def main():
     # 1. git commit -a/-am: scans tracked modified files (what -a would stage)
     # 2. git add ... && git commit: scans files from the git add part
     if not staged_files:
-        # Check if commit uses -a flag (auto-stage tracked modified files)
+        # Check if commit uses -a flag (auto-stage tracked modified files).
+        # Match only short flags at token boundary so things like "-shared"
+        # inside a -m message (e.g. "feat(g22/02-shared-login)") don't trip.
         commit_match = re.search(r'git\s+commit\s+(.+)', command)
-        if commit_match and re.search(r'-\w*a', commit_match.group(1)):
+        if commit_match and re.search(r'(?:^|\s)-[a-zA-Z]*a[a-zA-Z]*(?:\s|$)', commit_match.group(1)):
             result = subprocess.run(
                 ['git', 'diff', '--name-only'],
                 capture_output=True, text=True

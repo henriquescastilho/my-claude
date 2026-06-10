@@ -2,7 +2,7 @@
 name: tester
 description: Test engineer and QA specialist. Use for generating tests, analyzing test coverage, fixing failing tests, and ensuring quality. Writes tests that match the project's existing test patterns.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: sonnet
+model: opus
 color: blue
 memory: project
 effort: high
