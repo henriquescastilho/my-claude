@@ -1,93 +1,131 @@
 # my-claude
 
-Setup público e sanitizado de um Claude Code completo: agents, skills, hooks, MCP servers, comandos e metodologia de trabalho (handoff, sem emojis, segurança OWASP, deploy workflow, bootstrap de projetos).
+> Setup completo, público e sanitizado de um **Claude Code** de operação solo full-stack: 8 sub-agents, 792 skills, hooks de segurança, MCP servers, slash commands e uma metodologia de trabalho opinativa (handoff, zero emojis, português correto, OWASP por padrão, deploy validado).
 
-## Quick start (recomendado): deixa o Claude Code instalar pra você
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-ready-d97757)](https://claude.com/claude-code)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Shell](https://img.shields.io/badge/-Shell-4EAA25?logo=gnu-bash&logoColor=white)
+![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
 
-1. Clone o repo:
+Este repo é desenhado para ser **instalado por um agente de IA de forma autônoma**. Clone, abra o Claude Code dentro da pasta e cole o protocolo abaixo — o agente faz o resto.
+
+---
+
+## Para agentes de IA: protocolo de auto-configuração
+
+> Você é um agente rodando dentro deste repositório. Execute os passos abaixo **em ordem**, parando e reportando se algum falhar. Não invente valores; quando faltar uma chave, deixe o placeholder. Não exponha segredos no terminal. Não comite nada. Português correto, sem emojis.
+
+```text
+PASSO 1 — Backup (idempotente)
+  - Se ~/.claude/settings.json existir: copie para ~/.claude/settings.json.bak-$(date +%Y%m%d-%H%M%S)
+  - Se ~/.claude.json existir:          copie para ~/.claude.json.bak-$(date +%Y%m%d-%H%M%S)
+
+PASSO 2 — Instalar arquivos
+  - Execute ./scripts/install.sh
+  - Isso faz rsync de .claude/, .codex/ e .claude-mem-hybrid/ para $HOME,
+    com backup de settings.json/config.toml e exclusão de cache/state.
+
+PASSO 3 — MCP servers
+  - Leia .claude/mcp-servers.template.json (4 servers: n8n-mcp, claude-skills-mcp, mem-hybrid, magic).
+  - Para cada server, pergunte ao usuário se deve ativar.
+  - Se sim, adicione o bloco em ~/.claude.json no campo "mcpServers".
+  - Para cada placeholder ${VAR} em "env", peça o valor ao usuário (sem ecoar) ou deixe vazio.
+
+PASSO 4 — Plugins (interativo, dentro do Claude Code)
+  - Leia "enabledPlugins" em .claude/settings.json.
+  - Instrua o usuário a rodar /plugin e instalar cada um:
+    context7, commit-commands, claude-md-management, pyright-lsp,
+    typescript-lsp, skill-creator, playwright.
+  - Este passo NÃO pode ser feito via shell — só via /plugin no Claude.
+
+PASSO 5 — Personalização do CLAUDE.md
+  - Abra ~/.claude/CLAUDE.md.
+  - Pergunte o nome do operador e substitua "Henrique Castilho".
+  - Pergunte o nome da empresa/operação (opcional) e substitua "DME Technology".
+  - Mantenha a metodologia intacta (regras de ouro, roteamento de modelo,
+    sem emojis, português, OWASP, handoff).
+
+PASSO 6 — Sub-agents
+  - Confirme ~/.claude/agents/ com os 8 sub-agents:
+    architect, infra-architect (Fable 5) | implementer, reviewer, tester,
+    security-auditor (Opus 4.8) | scout, deployer (Sonnet 4.6).
+  - Mostre o modelo roteado de cada um.
+
+PASSO 7 — Memória híbrida (opcional)
+  - Pergunte se deve subir o servidor de memória (PostgreSQL + Redis).
+  - Se sim: cd ~/.claude-mem-hybrid && docker compose up -d ; mostre o status.
+
+PASSO 8 — Validação final
+  - Rode: ls ~/.claude/agents ~/.claude/skills ~/.claude/commands ~/.claude/hooks ~/.claude/methods
+  - Resuma o que foi instalado e o que ficou pendente (chaves, plugins, memória).
+
+Ao terminar: reporte o estado final em uma tabela curta. Não comite. Não faça deploy.
+```
+
+---
+
+## O que tem aqui
+
+### `.claude/` — config principal
+
+| Diretório | Conteúdo |
+|---|---|
+| `agents/` | **8 sub-agents** com roteamento por modelo (Fable 5 / Opus 4.8 / Sonnet 4.6) |
+| `skills/` | **792 skills** — segurança ofensiva/defensiva, forense, cloud, design, build, review, etc. |
+| `commands/` | slash commands (`auto-browser`, `security/`, `utility-cmds/`) |
+| `hooks/` | `cct-secret-scanner.py`, `cct-dangerous-command-blocker.py`, `block-env-commit.sh` |
+| `methods/` | refs de metodologia: handoff, no-emoji, security OWASP, deploy, bootstrap, banner |
+| `output-styles/` | `engineering.md`, `mentor.md` |
+| `CLAUDE.md` · `RTK.md` · `SECOND_BRAIN.md` · `AGENTS.md` | método completo |
+| `settings.json` | hooks (PreToolUse/PostToolUse/SessionStart) + `enabledPlugins` |
+| `mcp-servers.template.json` | MCPs sanitizados com placeholders `${VAR}` |
+
+### Roteamento de modelo (em `CLAUDE.md`)
+
+| Tarefa | Sub-agent | Modelo |
+|---|---|---|
+| Buscar/explorar código | `scout` | Sonnet 4.6 |
+| Implementar feature / fix | `implementer` | Opus 4.8 |
+| Arquitetura / PRD / decisão | `architect` | Fable 5 |
+| Infraestrutura / cloud | `infra-architect` | Fable 5 |
+| Review de código | `reviewer` | Opus 4.8 |
+| Testes | `tester` | Opus 4.8 |
+| Audit de segurança | `security-auditor` | Opus 4.8 |
+| Pre-deploy | `deployer` | Sonnet 4.6 |
+
+### `.codex/` — setup do Codex CLI (prompts, skills, vendor imports)
+### `.claude-mem-hybrid/` — MCP de memória persistente (PostgreSQL + Redis via docker compose)
+
+---
+
+## Setup manual (alternativa ao protocolo)
 
 ```bash
 git clone https://github.com/henriquescastilho/my-claude.git ~/my-claude
 cd ~/my-claude
+./scripts/install.sh
 ```
 
-2. Abre o Claude Code dentro dessa pasta:
+Depois:
+1. Copie os blocos de `.claude/mcp-servers.template.json` para `~/.claude.json` (`mcpServers`) e preencha os `${VAR}`.
+2. No Claude Code, rode `/plugin` e instale cada plugin listado em `enabledPlugins`.
+3. Edite `~/.claude/CLAUDE.md` trocando nome/empresa.
+4. (Opcional) `cd ~/.claude-mem-hybrid && docker compose up -d`.
 
-```bash
-claude
-```
+---
 
-3. Cola o prompt abaixo. O Claude faz o resto.
+## Segredos e sanitização
 
-### Prompt de setup
+Este repo é **público e sanitizado**. Nada pessoal é exposto:
 
-````
-Você está dentro do repo `my-claude`. Faça o setup completo no meu sistema seguindo estes passos, em ordem, parando se algum passo falhar:
+- API keys de MCP → placeholders `${VAR}` (nunca valores reais)
+- Paths absolutos `/Users/<user>/...` → `$HOME`
+- Symlinks resolvidos para conteúdo real (sem vazar paths locais)
+- Excluídos via `.gitignore`: auth tokens, history, sessions, sqlite/db state, logs, caches de plugin, memória pessoal, planos de trabalho
 
-1. Backup
-   - Se `~/.claude/settings.json` existir, copia para `~/.claude/settings.json.bak-$(date +%Y%m%d-%H%M%S)`.
-   - Se `~/.claude.json` existir, copia para `~/.claude.json.bak-$(date +%Y%m%d-%H%M%S)`.
+Ao instalar, **você** preenche suas próprias chaves localmente — elas nunca tocam o repo.
 
-2. Rodar o instalador
-   - Executa `./scripts/install.sh`. Isso faz rsync de `.claude/`, `.codex/`, `.claude-mem-hybrid/` para o `$HOME` com exclusões de cache/state.
-
-3. MCPs
-   - Lê `.claude/mcp-servers.template.json`.
-   - Para cada server, pergunta se quero ativar. Se sim, adiciona em `~/.claude.json` no campo `mcpServers`.
-   - Para cada `${VAR}` placeholder em env, pergunta o valor (sem ecoar) ou deixa vazio se eu não tiver a chave ainda.
-
-4. Plugins
-   - Abre `.claude/settings.json` e lê `enabledPlugins`.
-   - Lista os plugins (context7, commit-commands, claude-md-management, pyright-lsp, typescript-lsp, skill-creator, playwright) e me diz para rodar `/plugin` dentro do Claude pra instalar cada um. Esse passo precisa ser interativo dentro do Claude, não pode ser via shell.
-
-5. Personalização
-   - Abre `~/.claude/CLAUDE.md`.
-   - Substitui "Henrique Castilho" pelo meu nome (pergunta).
-   - Substitui "DME Technology" pelo nome da minha empresa/operação (pergunta, opcional).
-   - Mantém o resto da metodologia intacta (regras de ouro, roteamento de modelo, sem emojis, português correto, OWASP, handoff).
-
-6. Métodos
-   - Confirma que `~/.claude/methods/` existe com os refs: handoff, no-emoji, security, deploy, bootstrap, banner.
-   - Mostra um resumo de 1 linha de cada.
-
-7. Sub-agents
-   - Lista os 7 sub-agents instalados em `~/.claude/agents/`: architect, implementer, scout, reviewer, tester, security-auditor, deployer. Mostra o modelo de cada um.
-
-8. Memória híbrida (opcional)
-   - Pergunta se quero rodar o servidor de memória com PostgreSQL + Redis.
-   - Se sim, executa `cd ~/.claude-mem-hybrid && docker compose up -d` e mostra o status.
-
-9. RTK (opcional)
-   - Pergunta se quero instalar o Rust Token Killer (proxy CLI que reduz tokens em 60-90% em operações de dev). Se sim, mostra o link de instalação.
-
-10. Validação final
-    - Roda `ls ~/.claude/agents ~/.claude/skills ~/.claude/commands ~/.claude/hooks ~/.claude/methods` e confirma que tudo foi copiado.
-    - Mostra um resumo do que foi instalado e o que ficou pendente.
-
-Importante:
-- Não comite nada.
-- Não exponha chaves de API no terminal.
-- Se algum passo falhar, mostra o erro e pergunta se continua.
-- Use português correto com acentos. Sem emojis.
-````
-
-## O que tem aqui
-
-### `.claude/`
-- **`agents/`** — 7 sub-agents com roteamento por modelo (Opus/Sonnet/Haiku)
-- **`skills/`** — skills custom (graphify, deslop, deploy-check, ui-ux-pro-max, mcp-builder, etc.)
-- **`commands/`** — slash commands organizados (gsd, taskmaster, memory, security, workflow, cct, utility-cmds)
-- **`hooks/`** — secret-scanner, dangerous-command-blocker, conventional-commits, env-blocker, gsd-statusline, etc.
-- **`methods/`** — refs de metodologia (handoff, no-emoji, security OWASP, deploy, bootstrap, banner)
-- **`CLAUDE.md`** + **`RTK.md`** + **`SECOND_BRAIN.md`** — método completo
-- **`mcp-servers.template.json`** — MCPs sanitizados (n8n-mcp, claude-skills-mcp, mem-hybrid, magic)
-- **`settings.json`** — config de hooks e plugins
-
-### `.codex/`
-- Setup do Codex CLI com prompts, skills e vendor imports
-
-### `.claude-mem-hybrid/`
-- Servidor MCP de memória persistente (PostgreSQL + Redis via docker compose)
+---
 
 ## Filosofia (resumo do `CLAUDE.md`)
 
@@ -100,45 +138,32 @@ Importante:
 7. **Sem emojis** — em lugar nenhum (texto, commits, PR, UI, logs)
 8. **Português correto** — acentos e cedilha sempre
 
-## Install manual (alternativa ao prompt)
+---
 
-```bash
-git clone https://github.com/henriquescastilho/my-claude.git
-cd my-claude
-./scripts/install.sh
-```
-
-Depois:
-
-1. Copia `.claude/mcp-servers.template.json` → adiciona em `~/.claude.json` no campo `mcpServers`, preenche `${VARS}`.
-2. No Claude Code, roda `/plugin` e instala cada plugin listado em `enabledPlugins` do `settings.json`.
-3. Edita `~/.claude/CLAUDE.md` trocando o nome/empresa.
-4. (Opcional) `cd ~/.claude-mem-hybrid && docker compose up -d` para o servidor de memória.
-
-## Sanitização
-
-- Paths absolutos `/Users/.../` → `$HOME` ou `~`
-- API keys em MCPs → placeholders `${VAR}`
-- Excluídos: memória pessoal, sessions, todos, telemetry, cache, secrets state, plugin caches (1.3GB)
-- `.gitignore` cobre auth, history, sqlite, logs, sessions, db state
-
-## Estrutura de pastas
+## Estrutura
 
 ```
 my-claude/
-├── .claude/              # config principal
-│   ├── agents/           # sub-agents
-│   ├── skills/           # skills custom
-│   ├── commands/         # slash commands
-│   ├── hooks/            # hooks PreToolUse/PostToolUse/SessionStart
-│   ├── methods/          # metodologia (handoff, security, deploy, bootstrap)
-│   ├── CLAUDE.md         # regras globais
-│   ├── settings.json     # config de hooks e plugins
-│   └── mcp-servers.template.json
-├── .codex/               # setup Codex CLI
-├── .claude-mem-hybrid/   # MCP memory server
-├── docs/                 # notas de arquitetura
+├── .claude/
+│   ├── agents/                    # 8 sub-agents (roteamento por modelo)
+│   ├── skills/                    # 792 skills
+│   ├── commands/                  # slash commands
+│   ├── hooks/                     # secret-scanner, dangerous-command-blocker, env-blocker
+│   ├── methods/                   # metodologia (handoff, security, deploy, bootstrap, banner)
+│   ├── output-styles/             # engineering, mentor
+│   ├── CLAUDE.md                  # regras globais + roteamento de modelo
+│   ├── settings.json              # hooks + enabledPlugins
+│   └── mcp-servers.template.json  # MCPs sanitizados
+├── .codex/                        # setup Codex CLI
+├── .claude-mem-hybrid/            # MCP memory server (Postgres + Redis)
+├── docs/                          # notas de arquitetura + inventário
 └── scripts/
-    ├── install.sh        # instalador principal
+    ├── install.sh                 # instalador (rsync + backups)
     └── build_inventory.py
 ```
+
+---
+
+## Licença
+
+MIT. Use, adapte e republique — só não exponha as suas próprias chaves.
