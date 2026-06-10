@@ -3,7 +3,7 @@ name: deployer
 description: Deploy and CI/CD specialist. Use before any deploy to validate readiness, check env vars, verify build, and ensure everything is green. Also handles CI/CD pipeline setup and troubleshooting.
 tools: Read, Bash, Grep, Glob
 disallowedTools: Write, Edit
-model: haiku
+model: sonnet
 color: orange
 effort: medium
 skills:

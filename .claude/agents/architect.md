@@ -2,7 +2,7 @@
 name: architect
 description: Senior software architect for complex decisions. Use for PRD-to-architecture, system design, technology choices, database schema, API design, and any decision that affects the whole system. Use when starting a new project or major feature.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: opus
+model: fable
 color: purple
 memory: user
 effort: max

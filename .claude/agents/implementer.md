@@ -2,7 +2,7 @@
 name: implementer
 description: Full-stack code implementer. Use for writing features, fixing bugs, creating components, modifying code. Handles TypeScript, Python, Swift, and any stack found in the project.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: sonnet
+model: opus
 color: green
 memory: project
 effort: high
